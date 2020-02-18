@@ -1,0 +1,10 @@
+#!/bin/bash
+echo -n "Starting backend: "
+cd backend/
+PORT=3001 node ./bin/www &>/dev/null
+echo "✅"
+
+echo -n "Starting frontend: "
+cd ../frontend
+PORT=3000 node ./bin/www &>/dev/null
+echo "✅"
