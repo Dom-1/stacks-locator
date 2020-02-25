@@ -7,7 +7,6 @@ app.options('*', cors);
 app.use(cors());
 
 app.use('/', routes);
-app.use('/index.html', express.static('.'));
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

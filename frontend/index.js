@@ -1,12 +1,14 @@
 const express = require('express');
 const app = express();
 const cors = require('cors');
-const routes = require('./routes/routes');
+const corsOptions = {
+    origin: process.env.CORS_ALLOW_ORIGIN || '*',
+    methods: ['GET', 'PUT', 'POST', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+};
 
-app.options('*', cors);
-app.use(cors());
-
-app.use('/', routes);
+app.use(cors(corsOptions)); 
+app.use(express.static(__dirname + '/public'));
 app.use('/index.html', express.static('.'));
 
 // catch 404 and forward to error handler
@@ -21,12 +23,12 @@ app.use(function(req, res, next) {
 // development error handler
 // will print stacktrace
 if (app.get('env') === 'development') {
-  app.use(function(err, req, res, next) {
-    res.status( err.code || 500 )
-    .json({
-      status: 'error',
-      message: err + req + res + next
-    });
+  app.use(function(err, req, res, next) { 
+        res.status( err.code || 500 )
+        .json({
+          status: 'dev_error',
+          message: err.code + " " + err + req + res + next
+        });
   });
 }
 
@@ -35,7 +37,7 @@ if (app.get('env') === 'development') {
 app.use(function(err, req, res, next) {
   res.status(err.status || 500)
   .json({
-    status: 'error',
+    status: 'prod_error',
     message: err.message
   });
 });
