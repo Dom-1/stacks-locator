@@ -16,22 +16,22 @@ async function findMap(coll, callno) {
     switch (coll) {
         case "General Collection":
             if (strcmp(callno, "L") < 0) {
-                return "SecondFloor.jpg";
+                return "second-floor.jpg";
             } else {
-                return "ThirdFloor.jpg";
+                return "third-floor.jpg";
             }
             break;
         case "Periodicals":
         case "Reference":
-            return "FirstFloor.jpg";
+            return "first-floor.jpg";
             break;
         case "Media DVD":
         case "Media Video":
         case "Media CD":
-            return "SecondFloor.jpg";
+            return "second-floor.jpg";
             break;
         default:
-            return "FirstFloor.jpg";
+            return "first-floor.jpg";
     }
 }
 
