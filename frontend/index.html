@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html> 
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+		<meta http-equiv="Content-Security-Policy" content="default-src *; script-src 'self' 'unsafe-inline' https://code.jquery.com https://maxcdn.bootstrapcdn.com https://unpkg.com; style-src 'self' 'unsafe-inline' https://maxcdn.bootstrapcdn.com https://unpkg.com; font-src 'self' data: https://maxcdn.bootstrapcdn.com; img-src 'self' https://unpkg.com ;">
+		<meta charset="UTF-8">
+
+        <script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
+
+		<!-- Latest compiled and minified CSS -->
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+
+		<!-- Optional theme -->
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" crossorigin="anonymous">
+
+		<!-- Latest compiled and minified JavaScript -->
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+
+		<!-- Leaflet stylesheet and js library for mapping -->
+		<link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css"
+  integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
+  crossorigin=""/>
+		<script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"
+  integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew=="
+  crossorigin=""></script>
+		<title>Stacks Locator</title>
+    
+        <style> 
+                #map { 
+                    height: 325px
+                }
+
+                .helptext {
+                    display: inline
+                }
+        </style>
+    </head>
+    <body>
+		<center>
+            <p class='helptext'>The call number <b><p id='callnum' class='helptext'></p></b> is shelved: </p>
+			<p class='helptext'> 
+				on the <b><p id='floor' class='helptext'></p></b> floor ,
+				<br>
+				in <b><p id='coll' class='helptext'></p></b>
+			</p>
+			<p>See map below for approximate location. </p>
+		</center>
+		<div id='map'></div>
+		<script>
+var map = L.map('map', {
+    crs: L.CRS.Simple
+});
+
+var map_image, coords;
+var params = new URLSearchParams(window.location.search);
+
+var x = new XMLHttpRequest();
+x.onload = function() {
+    const data = JSON.parse(this.response);
+    if(x.status >= 200 && x.status < 400) {
+        map_image = "/" + data.map_image;
+        coords = data.coordinates;
+    } else {
+        console.log("Error with request");
+    }
+}
+x.open("GET", "http://localhost:3001/mapit/" + params.get('collection') + 
+                        "/" + params.get('callno') + 
+                        "/" + params.get('status'), false);
+x.send();
+document.getElementById('callnum').innerText = params.get('callno');
+document.getElementById('floor').innerText = map_image.substr(1, map_image.indexOf('-')-1);
+document.getElementById('coll').innerText = params.get('collection');
+var bounds = [[0,0], [325,430]];
+var image = L.imageOverlay(map_image, bounds).addTo(map);
+var marker = L.marker(coords).addTo(map);
+map.fitBounds(bounds);
+        </script>
+    </body>
+</html>
